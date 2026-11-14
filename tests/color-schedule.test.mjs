@@ -121,7 +121,7 @@ test('buildGammaRamp: constructs 256-entry 16-bit LUT for normal and darkroom mo
 
 test('computeSolarTimes & computeScheduleKelvin: transitions across Day, Sunset and Bedtime', () => {
   const ctx = loadEngine();
-  const solar = ctx.computeSolarTimes(new Date('2026-03-21T12:00:00Z'), -33.87, 151.21);
+  const solar = ctx.computeSolarTimes(new Date('2026-03-21T12:00:00Z'), -33.87, 151.21, 660); // Sydney AEDT, so the test doesn't depend on the machine's timezone
   assert.ok(solar.sunrise >= 180 && solar.sunrise <= 660);
   assert.ok(solar.sunset >= 900 && solar.sunset <= 1350);
 
