@@ -43,7 +43,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Rust tests
-        run: cargo test --manifest-path src-tauri/Cargo.toml
+        run: npm run build && cargo test --manifest-path src-tauri/Cargo.toml
         timeout-minutes: 20
 
       # tauri.conf.json has an updater pubkey and createUpdaterArtifacts: true.
