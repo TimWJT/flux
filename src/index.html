@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en" data-width="normal" data-font="sans" data-outline="off" data-effect="normal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flux</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23ea580c'/%3E%3Ccircle cx='50' cy='46' r='16' fill='white'/%3E%3Cpath fill='none' stroke='white' stroke-width='5.5' stroke-linecap='round' d='M50 18v5M50 69v5M22 46h5M73 46h5M30.2 26.2l3.6 3.6M66.2 62.2l3.6 3.6M69.8 26.2l-3.6 3.6M33.8 62.2l-3.6 3.6'/%3E%3Cpath fill='none' stroke='white' stroke-width='6' stroke-linecap='round' d='M18 76c10-6 22-6 32 0s22 6 32 0'/%3E%3C/svg%3E">
+<script>/*__STARTUP__*/</script>
+<style>/*__CSS__*/</style>
+</head>
+<body>
+
+<div id="tint-overlay" aria-hidden="true"></div>
+
+<div id="chrome">
+<header id="bar">
+  <button class="btn primary" id="btn-power" title="Toggle display warmth (Space)" aria-pressed="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <span id="power-label">Active</span>
+  </button>
+
+  <button class="btn" id="btn-outline" title="Lighting presets &amp; modes (o)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg>
+  </button>
+
+  <span id="live" class="on" title="Display gamma controller active"></span>
+  <span id="title"><b>Sunset</b> &middot; 3400K</span>
+  <span id="docmeta">100% &middot; R 100% G 74% B 48%</span>
+
+  <span class="spacer"></span>
+
+  <button class="btn" id="btn-warmer" title="Warmer / less blue (-)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 12h14"/></svg>
+  </button>
+  <span id="zoomval" tabindex="0" title="Click to return to schedule (0)">3400K</span>
+  <button class="btn" id="btn-cooler" title="Cooler / more daylight (+)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <button class="btn" id="btn-preview" title="Preview 24-hour solar cycle (p)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+  </button>
+
+  <span class="sep"></span>
+
+  <button class="btn" id="btn-pause-hour" title="Pause for 1 hour (h)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+  </button>
+  <button class="btn" id="btn-effect" title="Color effect: Normal (e)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9z"/></svg>
+  </button>
+  <button class="btn" id="btn-width" title="Width (w)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8 3 12l4 4M17 8l4 4-4 4M3 12h18"/></svg>
+  </button>
+  <button class="btn" id="btn-font" title="Font (f)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 11 5l6 14M7.5 14h7"/></svg>
+  </button>
+  <button class="btn" id="btn-theme" title="Theme (t)" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+  </button>
+  <button class="btn" id="btn-settings" title="Settings (,)" aria-pressed="false" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</header>
+</div>
+
+<div id="shell">
+  <nav id="outline" aria-label="Lighting presets and effects">
+    <h4>Lighting Presets</h4>
+    <div id="preset-list"></div>
+    <h4 style="margin-top:18px">Color Effects</h4>
+    <div id="effect-list"></div>
+    <h4 style="margin-top:18px">Quick Temp</h4>
+    <div id="quick-temp-list"></div>
+  </nav>
+
+  <div id="stage">
+    <main id="scroller" tabindex="0">
+      <div id="canvas">
+        <article id="doc">
+          <!-- Hero status header -->
+          <section class="flux-hero" id="hero-card">
+            <div class="hero-top">
+              <div>
+                <div class="phase-pill" id="phase-badge">
+                  <span class="phase-dot" id="phase-swatch"></span>
+                  <span id="phase-name">Sunset</span>
+                </div>
+                <h1 id="hero-kelvin">3400K <span id="hero-desc">Warm White / Halogen</span></h1>
+                <p class="hero-sub" id="hero-sub">Solar schedule &middot; Wake in 8h</p>
+              </div>
+              <div class="hero-meta">
+                <div class="stat-pill">
+                  <span class="stat-label">Sunrise</span>
+                  <strong id="stat-sunrise">06:18</strong>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-label">Sunset</span>
+                  <strong id="stat-sunset">19:42</strong>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-label">Bedtime</span>
+                  <strong id="stat-bedtime">23:00</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive 24-Hour Solar & Circadian Curve -->
+            <div class="curve-wrap" id="curve-container" tabindex="0" role="slider" aria-label="24-hour solar schedule preview timeline" aria-valuemin="0" aria-valuemax="1440" aria-valuenow="720" title="Click, drag, or use Left/Right arrows to preview any time of day">
+              <svg id="solar-svg" viewBox="0 0 640 168" preserveAspectRatio="none" aria-label="24-hour color temperature curve">
+                <defs>
+                  <linearGradient id="curve-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28"/>
+                    <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>
+                  </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <g class="curve-grid">
+                  <line x1="0" y1="24" x2="640" y2="24"/>
+                  <line x1="0" y1="78" x2="640" y2="78"/>
+                  <line x1="0" y1="132" x2="640" y2="132"/>
+                  <line id="grid-sunrise" x1="160" y1="0" x2="160" y2="146" stroke-dasharray="3 3"/>
+                  <line id="grid-sunset" x1="480" y1="0" x2="480" y2="146" stroke-dasharray="3 3"/>
+                </g>
+                <!-- Shaded area under curve -->
+                <path id="curve-area" d="" fill="url(#curve-grad)"/>
+                <!-- Main Kelvin curve -->
+                <path id="curve-line" d="" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Current time vertical marker & sun/moon handle -->
+                <line id="curve-cursor" x1="320" y1="8" x2="320" y2="146" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <circle id="curve-dot" cx="320" cy="60" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>
+                <!-- Axis labels -->
+                <g class="curve-labels">
+                  <text x="10" y="162">00:00</text>
+                  <text x="160" y="162" text-anchor="middle">06:00</text>
+                  <text x="320" y="162" text-anchor="middle">12:00</text>
+                  <text x="480" y="162" text-anchor="middle">18:00</text>
+                  <text x="630" y="162" text-anchor="end">24:00</text>
+                  <text x="8" y="20" class="temp-axis">6500K</text>
+                  <text x="8" y="74" class="temp-axis">4000K</text>
+                  <text x="8" y="128" class="temp-axis">1900K</text>
+                </g>
+              </svg>
+              <div class="curve-footer">
+                <span id="curve-time-label">Local time: <b>02:15</b></span>
+                <span id="curve-hint">Drag across timeline to scrub &middot; Press <kbd>p</kbd> for 24h preview</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Three-Phase Circadian Sliders + Brightness -->
+          <section class="flux-section">
+            <h2>Lighting Schedule</h2>
+            <p class="section-lead">Adjust your screen warmth for each part of the day. Dragging any slider previews it immediately; in Manual mode, the Daytime slider controls your fixed warmth.</p>
+
+            <div class="slider-stack">
+              <div class="slider-card" id="card-day">
+                <div class="slider-head">
+                  <div class="slider-title">
+                    <span class="swatch" id="swatch-day"></span>
+                    <label for="slider-day">Daytime</label>
+                    <span class="phase-tag" id="tag-day">Sunrise &rarr; Sunset</span>
+                  </div>
+                  <div class="slider-readout">
+                    <b id="val-day">6500K</b>
+                    <span id="desc-day">Daylight</span>
+                  </div>
+                </div>
+                <input type="range" id="slider-day" class="temp-range" min="1900" max="6500" step="50" value="6500">
+              </div>
+
+              <div class="slider-card" id="card-sunset">
+                <div class="slider-head">
+                  <div class="slider-title">
+                    <span class="swatch" id="swatch-sunset"></span>
+                    <label for="slider-sunset">Sunset</label>
+                    <span class="phase-tag" id="tag-sunset">Evening wind-down</span>
+                  </div>
+                  <div class="slider-readout">
+                    <b id="val-sunset">3400K</b>
+                    <span id="desc-sunset">Halogen</span>
+                  </div>
+                </div>
+                <input type="range" id="slider-sunset" class="temp-range" min="1200" max="6500" step="50" value="3400">
+              </div>
+
+              <div class="slider-card" id="card-night">
+                <div class="slider-head">
+                  <div class="slider-title">
+                    <span class="swatch" id="swatch-night"></span>
+                    <label for="slider-night">Bedtime</label>
+                    <span class="phase-tag" id="tag-night">Late night before wake</span>
+                  </div>
+                  <div class="slider-readout">
+                    <b id="val-night">2300K</b>
+                    <span id="desc-night">Candlelight</span>
+                  </div>
+                </div>
+                <input type="range" id="slider-night" class="temp-range" min="1200" max="6500" step="50" value="2300">
+              </div>
+
+              <div class="slider-card" id="card-brightness">
+                <div class="slider-head">
+                  <div class="slider-title">
+                    <span class="swatch swatch-dim" id="swatch-brightness"></span>
+                    <label for="slider-brightness">Brightness</label>
+                    <span class="phase-tag">Software gamma dimming</span>
+                  </div>
+                  <div class="slider-readout">
+                    <b id="val-brightness">100%</b>
+                    <span id="desc-brightness">Full output</span>
+                  </div>
+                </div>
+                <input type="range" id="slider-brightness" class="dim-range" min="20" max="100" step="2" value="100">
+              </div>
+            </div>
+          </section>
+
+          <!-- Quick Overrides & Modes -->
+          <section class="flux-section">
+            <h2>Quick Modes &amp; Timers</h2>
+            <div class="mode-grid">
+              <button type="button" class="mode-btn" id="mode-schedule" data-active="true">
+                <strong>Solar Schedule</strong>
+                <span>Follow sunrise, sunset &amp; bedtime automatically</span>
+              </button>
+              <button type="button" class="mode-btn" id="mode-manual" data-active="false">
+                <strong>Manual Hold</strong>
+                <span>Lock current warmth (<b id="manual-k-label">3400K</b>) until changed</span>
+              </button>
+              <button type="button" class="mode-btn" id="mode-pause-1h" data-active="false">
+                <strong>Disable for 1 Hour</strong>
+                <span>Full 6500K color accuracy for photo or design work</span>
+              </button>
+              <button type="button" class="mode-btn" id="mode-pause-sunrise" data-active="false">
+                <strong>Disable Until Sunrise</strong>
+                <span>Resume automatic schedule tomorrow morning</span>
+              </button>
+              <button type="button" class="mode-btn" id="mode-movie" data-active="false">
+                <strong>Movie Mode (2.5h)</strong>
+                <span>4200K cinema warmth that preserves shadow detail</span>
+              </button>
+              <button type="button" class="mode-btn" id="mode-darkroom" data-active="false">
+                <strong>Darkroom Mode</strong>
+                <span>Deep red monochrome filter to preserve night vision</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Hardware Gamma & Reading Preview -->
+          <section class="flux-section">
+            <h2>Display Gamma &amp; Reading Preview</h2>
+            <div class="gamma-panel">
+              <div class="gamma-info">
+                <div class="gamma-row">
+                  <span>Backend driver</span>
+                  <code id="driver-status">Win32 GDI SetDeviceGammaRamp</code>
+                </div>
+                <div class="gamma-row">
+                  <span>Channel multipliers</span>
+                  <code id="channel-rgb">R 1.000 &middot; G 0.742 &middot; B 0.481</code>
+                </div>
+                <div class="gamma-row">
+                  <span>Connected displays</span>
+                  <code id="display-list">Primary Display (256-entry LUT)</code>
+                </div>
+              </div>
+              <div class="channel-bars" aria-label="RGB channel output bars">
+                <div class="ch-bar"><span class="ch-name">R</span><div class="ch-track"><div class="ch-fill ch-r" id="bar-r" style="width:100%"></div></div><b id="pct-r">100%</b></div>
+                <div class="ch-bar"><span class="ch-name">G</span><div class="ch-track"><div class="ch-fill ch-g" id="bar-g" style="width:74%"></div></div><b id="pct-g">74%</b></div>
+                <div class="ch-bar"><span class="ch-name">B</span><div class="ch-track"><div class="ch-fill ch-b" id="bar-b" style="width:48%"></div></div><b id="pct-b">48%</b></div>
+              </div>
+            </div>
+
+            <blockquote>
+              <strong>Why this feels easy on the eyes:</strong> Unlike an opaque orange window overlay that washes out black levels and lowers contrast, hardware gamma ramps scale the white point while keeping true blacks at <code>(0, 0, 0)</code>. In browser mode, a color-matrix preview simulates the exact Planckian locus tint.
+            </blockquote>
+
+            <pre><code><span class="hljs-comment">// Planckian blackbody locus &rarr; Win32 GDI 16-bit gamma ramp</span>
+<span class="hljs-keyword">fn</span> <span class="hljs-title">apply_kelvin_ramp</span>(kelvin: <span class="hljs-type">u32</span>, brightness: <span class="hljs-type">f64</span>) -&gt; [[<span class="hljs-type">u16</span>; <span class="hljs-number">256</span>]; <span class="hljs-number">3</span>] {
+    <span class="hljs-keyword">let</span> (r, g, b) = kelvin_to_rgb(kelvin);
+    build_gamma_lut(r, g, b, brightness)
+}</code></pre>
+          </section>
+        </article>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="settings" role="dialog" aria-label="Settings" aria-modal="true">
+  <div class="field">
+    <label>Schedule mode</label>
+    <div class="seg" id="cfg-mode" role="radiogroup" aria-label="Schedule mode">
+      <button type="button" data-val="solar" role="radio" aria-checked="true">Solar</button>
+      <button type="button" data-val="manual" role="radio" aria-checked="false">Manual</button>
+    </div>
+    <small id="cfg-mode-hint">Adjusts automatically at sunrise, sunset and bedtime</small>
+  </div>
+
+  <div class="field">
+    <label>Transition speed</label>
+    <div class="seg" id="cfg-transition" role="radiogroup" aria-label="Transition speed">
+      <button type="button" data-val="fast" role="radio" aria-checked="false">10m</button>
+      <button type="button" data-val="medium" role="radio" aria-checked="true">20m</button>
+      <button type="button" data-val="slow" role="radio" aria-checked="false">60m</button>
+    </div>
+    <small id="cfg-transition-hint">Gradual 20-minute crossfade at sunrise, sunset and bedtime</small>
+  </div>
+
+  <div class="field">
+    <label for="cfg-waketime">Earliest wake time <b id="cfg-waketime-val">07:00</b></label>
+    <input type="range" id="cfg-waketime" min="4" max="11" step="0.5" value="7">
+    <small>Bedtime warmth starts 8 hours before you wake</small>
+  </div>
+
+  <div class="field">
+    <label for="cfg-location">Location preset <b id="cfg-coords-val"></b></label>
+    <select id="cfg-location" class="cfg-select" aria-label="Location preset">
+      <option value="auto">Auto (from system timezone)</option>
+      <option value="-33.87,151.21">Sydney (-33.9°, 151.2°)</option>
+      <option value="-37.81,144.96">Melbourne (-37.8°, 145.0°)</option>
+      <option value="37.77,-122.42">San Francisco (37.8°, -122.4°)</option>
+      <option value="40.71,-74.01">New York (40.7°, -74.0°)</option>
+      <option value="51.51,-0.13">London (51.5°, -0.1°)</option>
+      <option value="35.68,139.65">Tokyo (35.7°, 139.7°)</option>
+      <option value="1.35,103.82">Singapore (1.4°, 103.8°)</option>
+    </select>
+    <small>Calculated 100% offline — no network lookup</small>
+  </div>
+
+  <div class="field">
+    <label for="cfg-step">Step size (+/-) <b id="cfg-step-val">200K</b></label>
+    <input type="range" id="cfg-step" min="50" max="500" step="50" value="200">
+    <small>Kelvin change per toolbar click or +/- shortcut</small>
+  </div>
+
+  <div class="field">
+    <label for="cfg-textsize">Text size <b id="cfg-textsize-val">16px</b></label>
+    <input type="range" id="cfg-textsize" min="13" max="22" step="1" value="16">
+  </div>
+
+  <div class="field">
+    <label for="cfg-preview-tint">Window preview tint <b></b></label>
+    <label class="check"><input type="checkbox" id="cfg-preview-tint" checked> Tint app window to match warmth</label>
+    <small>Shows the exact color warmth inside this window even in browser builds</small>
+  </div>
+
+  <div class="field" id="cfg-restore-quit-field">
+    <label for="cfg-restore-quit">On close <b></b></label>
+    <label class="check"><input type="checkbox" id="cfg-restore-quit"> Keep warmth active after closing window</label>
+    <small>Off: puts your display's original gamma back when you quit</small>
+  </div>
+
+  <div class="field" id="cfg-update-start-field">
+    <label for="cfg-update-on-start">Startup check <b></b></label>
+    <label class="check"><input type="checkbox" id="cfg-update-on-start" checked> Check for updates on startup</label>
+    <small>Off: the app never contacts the update server on its own</small>
+  </div>
+
+  <div class="field" id="cfg-update">
+    <label>Updates <b id="cfg-version"></b></label>
+    <button class="btn" id="cfg-check" style="width:100%">Check for updates</button>
+    <small id="cfg-update-hint">Checked automatically when the app starts</small>
+  </div>
+
+  <button class="btn primary" id="cfg-reset" style="width:100%">Reset to defaults</button>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="update" role="status">
+  <span id="update-text"></span>
+  <button class="btn primary" id="update-go">Update</button>
+  <button class="btn" id="update-later">Later</button>
+</div>
+
+<script>/*__JS__*/</script>
+</body>
+</html>

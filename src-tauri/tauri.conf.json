@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Flux",
+  "version": "1.1.1",
+  "identifier": "com.flux.desktop",
+  "build": {
+    "frontendDist": "../dist",
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run build"
+  },
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; script-src 'self'; form-action 'none'",
+      "assetProtocol": {
+        "enable": false
+      }
+    },
+    "windows": [
+      {
+        "label": "main",
+        "create": false,
+        "title": "Flux",
+        "width": 940,
+        "height": 760,
+        "minWidth": 420,
+        "minHeight": 380,
+        "resizable": true,
+        "center": true
+      }
+    ]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/TimWJT/flux/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIwQTBGQjg2ODEzNjE1MjQKUldRa0ZUYUJodnVnc015S01XOUl3a0paRkl5NWdDSHRBMVdiMUxKTTZWZVFWSnhhNHJzYmpxSTcK",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "shortDescription": "A circadian screen warmer that gets out of the way",
+    "longDescription": "Warms your display at sunset and bedtime using hardware gamma ramps (SetDeviceGammaRamp) and offline solar position calculations.",
+    "category": "Utility",
+    "copyright": "© 2026 Tim Wang",
+    "licenseFile": "../LICENSE",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "startMenuFolder": "Flux"
+      }
+    },
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0"
+        ]
+      }
+    },
+    "publisher": "Tim Wang",
+    "homepage": "https://github.com/TimWJT/flux"
+  }
+}
