@@ -32,7 +32,7 @@ for (const osDark of [false, true]) {
       });
       vm.runInContext(source, context);
       assert.equal(attributes.get('data-theme') ?? null, expected);
-      assert.deepEqual(reads, ['flux.theme']);
+      assert.deepEqual(reads, ['nightlight.theme']);
       vm.runInContext(source, context);
       assert.equal(reads.length, 1);
     });
@@ -65,7 +65,7 @@ test('build structure: both output shapes apply theme first and packaged JS stay
     .replace('import.meta.url', JSON.stringify(new URL('build.mjs', project).href));
   await vm.runInContext('(async () => {\n' + buildSource + '\n})()', context);
   const packaged = outputs.get('index.html');
-  const standalone = outputs.get('Flux.html');
+  const standalone = outputs.get('Night Light.html');
   assert.equal(outputs.get('startup.js'), source);
   assert.match(packaged, /<script src="startup\.js"><\/script>/);
   assert.match(packaged, /<script src="app\.js" defer><\/script>/);

@@ -48,4 +48,4 @@ createServer(async (req, res) => {
     } catch { /* try the next candidate */ }
   }
   res.writeHead(404).end('not found');
-}).listen(PORT, '127.0.0.1', () => console.log(`serving flux on http://127.0.0.1:${PORT}`));
+}).listen(PORT, '127.0.0.1', () => console.log(`serving night-light on http://127.0.0.1:${PORT}`));

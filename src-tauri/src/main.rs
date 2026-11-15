@@ -1,4 +1,4 @@
-// Flux — native circadian display gamma controller.
+// Night Light — native circadian display gamma controller.
 //
 // Applies Planckian blackbody color temperature and brightness to the display
 // hardware lookup table (LUT) via Win32 GDI `SetDeviceGammaRamp`.
@@ -744,7 +744,7 @@ fn main() {
         .plugin(tauri_plugin_process::init())
         .on_window_event(|window, event| {
             // Restore while the window is still on screen, so the user never
-            // sees the desktop flash warm after Flux disappears.
+            // sees the desktop flash warm after Night Light disappears.
             if let tauri::WindowEvent::CloseRequested { .. } = event {
                 if let Some(ctl) = window.try_state::<Arc<Controller>>() {
                     ctl.shutdown();
@@ -799,7 +799,7 @@ fn main() {
             set_keep_gamma_on_exit
         ])
         .build(tauri::generate_context!())
-        .expect("failed to start Flux");
+        .expect("failed to start Night Light");
 
     app.run(|_app, event| {
         if let RunEvent::Exit = event {

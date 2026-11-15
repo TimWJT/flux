@@ -10,7 +10,7 @@ const out = join(here, 'dist');
 // The standalone single-file download is a build artefact for humans, not an app
 // input, so it goes to a sibling directory Tauri never looks at.
 const standaloneOut = join(here, 'dist-standalone');
-const OUT_NAME = 'Flux.html';
+const OUT_NAME = 'Night Light.html';
 const nodePaths = [join(here, 'node_modules')];
 
 // Guard against ever deleting anything other than our own output directory.
@@ -64,7 +64,7 @@ const tpl = await readFile(join(here, 'src/index.html'), 'utf8');
 //   index.html + startup.js + app.css + app.js -> what Tauri bundles. Keeping the script
 //     external lets the packaged app run under a strict `script-src 'self'`
 //     CSP, which matters for desktop security.
-//   dist-standalone/Flux.html -> everything inlined, the standalone
+//   dist-standalone/Night Light.html -> everything inlined, the standalone
 //     download that works from file:// with no server and no siblings.
 const inlined = tpl
   .replace('/*__STARTUP__*/', () => inlineStartup)

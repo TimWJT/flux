@@ -73,7 +73,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Flux ${{ github.ref_name }}'
+          releaseName: 'Night Light ${{ github.ref_name }}'
           releaseBody: |
             ## Which file do I download?
 
@@ -82,7 +82,7 @@ jobs:
             | What you want | Download the file ending in |
             |---|---|
             | **Windows app** (warms your screen) | **`_x64-setup.exe`** |
-            | **Try it in a browser** (window preview only, does not change the display) | **`Flux.html`** |
+            | **Try it in a browser** (window preview only, does not change the display) | **`Night.Light.html`** |
 
             ### First launch warning
 
@@ -119,6 +119,6 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           draft: true
-          files: 'dist-standalone/Flux.html'
+          files: 'dist-standalone/Night Light.html'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

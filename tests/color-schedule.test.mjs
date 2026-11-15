@@ -185,7 +185,7 @@ test('resetSettings syncs keepOnClose=false to native backend and clears movie/p
   const calls = [];
   const ctx = loadEngine({
     window: { __TAURI_INTERNALS__: {} },
-    storage: { 'flux.keepOnClose': 'true', 'flux.pauseUntil': String(Date.now() + 60000), 'flux.pauseMode': '"1h"' },
+    storage: { 'nightlight.keepOnClose': 'true', 'nightlight.pauseUntil': String(Date.now() + 60000), 'nightlight.pauseMode': '"1h"' },
     invoke: async (cmd, args) => {
       calls.push({ cmd, args });
       return { applied: true, stale: false, displaysTotal: 1, displaysUpdated: 1, strength: 1, multipliers: [1, 1, 1], requested: [1, 1, 1] };
@@ -197,16 +197,16 @@ test('resetSettings syncs keepOnClose=false to native backend and clears movie/p
   const keepCall = calls.find(c => c.cmd === 'set_keep_gamma_on_exit');
   assert.ok(keepCall);
   assert.equal(keepCall.args.keep, false);
-  assert.equal(ctx._storage.get('flux.pauseUntil'), '0');
-  assert.equal(ctx._storage.get('flux.pauseMode'), 'null');
+  assert.equal(ctx._storage.get('nightlight.pauseUntil'), '0');
+  assert.equal(ctx._storage.get('nightlight.pauseMode'), 'null');
 });
 
 test('sliders and stepKelvin persist pause cancellation and manualK', () => {
   const ctx = loadEngine({
     storage: {
-      'flux.mode': '"manual"',
-      'flux.pauseUntil': String(Date.now() + 60000),
-      'flux.pauseMode': '"1h"',
+      'nightlight.mode': '"manual"',
+      'nightlight.pauseUntil': String(Date.now() + 60000),
+      'nightlight.pauseMode': '"1h"',
     },
   });
   ctx.bindEvents();
@@ -214,17 +214,17 @@ test('sliders and stepKelvin persist pause cancellation and manualK', () => {
   assert.ok(dayListeners && dayListeners.length > 0);
   dayListeners[0]({ target: { value: '2700' } });
 
-  assert.equal(ctx._storage.get('flux.manualK'), '2700');
-  assert.equal(ctx._storage.get('flux.pauseUntil'), '0');
-  assert.equal(ctx._storage.get('flux.pauseMode'), 'null');
-  assert.equal(ctx._storage.get('flux.enabled'), 'true');
+  assert.equal(ctx._storage.get('nightlight.manualK'), '2700');
+  assert.equal(ctx._storage.get('nightlight.pauseUntil'), '0');
+  assert.equal(ctx._storage.get('nightlight.pauseMode'), 'null');
+  assert.equal(ctx._storage.get('nightlight.enabled'), 'true');
 
   // Re-pause and confirm stepKelvin also persists pause cancellation
   ctx.pauseForOneHour();
   ctx.stepKelvin(-1);
-  assert.equal(ctx._storage.get('flux.manualK'), '2500');
-  assert.equal(ctx._storage.get('flux.pauseUntil'), '0');
-  assert.equal(ctx._storage.get('flux.pauseMode'), 'null');
+  assert.equal(ctx._storage.get('nightlight.manualK'), '2500');
+  assert.equal(ctx._storage.get('nightlight.pauseUntil'), '0');
+  assert.equal(ctx._storage.get('nightlight.pauseMode'), 'null');
 });
 
 test('pushGammaToHardware sends monotonic seq, retries after failure, and displays clamped hardware multipliers', async () => {
@@ -269,14 +269,14 @@ test('pushGammaToHardware sends monotonic seq, retries after failure, and displa
 test('Movie Mode expires automatically after movieUntil passes', () => {
   const ctx = loadEngine({
     storage: {
-      'flux.effect': '"movie"',
-      'flux.movieUntil': String(Date.now() - 1000),
+      'nightlight.effect': '"movie"',
+      'nightlight.movieUntil': String(Date.now() - 1000),
     },
   });
   const out = ctx.evaluateCurrentOutput(new Date());
   assert.notEqual(out.phase, 'Movie Mode');
-  assert.equal(ctx._storage.get('flux.effect'), '"normal"');
-  assert.equal(ctx._storage.get('flux.movieUntil'), '0');
+  assert.equal(ctx._storage.get('nightlight.effect'), '"normal"');
+  assert.equal(ctx._storage.get('nightlight.movieUntil'), '0');
 });
 
 test('a reloaded page starts its gamma seq above the previous page load, so the native side does not drop it as stale', async () => {
@@ -308,7 +308,7 @@ test('fractional kelvin is rounded before it reaches the u32 native argument', a
 });
 
 test('paused readout is neutral even with Darkroom selected', () => {
-  const ctx = loadEngine({ storage: { 'flux.effect': '"darkroom"', 'flux.enabled': 'false' } });
+  const ctx = loadEngine({ storage: { 'nightlight.effect': '"darkroom"', 'nightlight.enabled': 'false' } });
   ctx.refreshOutput();
   assert.equal(ctx._elements.get('channel-rgb').textContent, 'R 1.000 · G 1.000 · B 1.000');
 });

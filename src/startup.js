@@ -1,9 +1,9 @@
 /* Runs synchronously in <head>, before the stylesheet and application bundle.
    Also bundled as a fallback: both startup and the theme button use this logic. */
 (() => {
-  if (window.__fluxTheme) return;
+  if (window.__nightLightTheme) return;
   function read() {
-    try { return JSON.parse(localStorage.getItem('flux.theme')); }
+    try { return JSON.parse(localStorage.getItem('nightlight.theme')); }
     catch { return 'auto'; }
   }
   function apply(value) {
@@ -13,6 +13,6 @@
     else root.setAttribute('data-theme', theme);
     return theme;
   }
-  window.__fluxTheme = { read, apply };
+  window.__nightLightTheme = { read, apply };
   apply(read());
 })();

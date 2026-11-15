@@ -1,8 +1,12 @@
-# Flux
+# Night Light
 
 A circadian screen warmer and blue-light filter. It warms your display at sunset and bedtime using hardware gamma ramps (`SetDeviceGammaRamp`), calculates sunrise and sunset offline, and stays out of the way.
 
-The UI is plain HTML, CSS and JS (solar calculator, Planckian locus solver, 24-hour interactive timeline). The build also produces `Flux.html`, a single self-contained file with everything inlined that runs in any browser as a window-only preview; only the Windows desktop app changes the display. Display calculation and scheduling run 100% offline with zero telemetry; your location and schedule never leave the machine. In the desktop app, an optional startup/manual update check queries GitHub Releases (and can be disabled in Settings).
+This app was previously called Flux. It is separate from Windows' built-in Night Light, so turn that off (Settings > System > Display) to avoid doubling up.
+
+Source and releases: <https://github.com/TimWJT/night-light>
+
+The UI is plain HTML, CSS and JS (solar calculator, Planckian locus solver, 24-hour interactive timeline). The build also produces `Night Light.html`, a single self-contained file with everything inlined that runs in any browser as a window-only preview; only the Windows desktop app changes the display. Display calculation and scheduling run 100% offline with zero telemetry; your location and schedule never leave the machine. In the desktop app, an optional startup/manual update check queries GitHub Releases (and can be disabled in Settings).
 
 ## Run from source
 
@@ -39,7 +43,7 @@ Installers land in `src-tauri/target/release/bundle/`. A local build needs `TAUR
 
 | Key | Action |
 |-----|--------|
-| `Space` | Toggle Flux active / paused |
+| `Space` | Toggle Night Light active / paused |
 | `+` / `-` | Step cooler / warmer (`Ctrl` `+`/`-` works too) |
 | `0` | Return to automatic solar schedule |
 | `p` | Preview 24-hour solar cycle |
@@ -59,11 +63,11 @@ src/index.html       markup + toolbar, with __STARTUP__ / __CSS__ / __JS__ injec
 src/startup.js       early theme apply, runs before the stylesheet
 src/app.css          design tokens (shared with Markdown Viewer), solar curve, slider cards
 src/main.js          Planckian Kelvin-to-RGB solver, NOAA solar schedule, UI & IPC logic
-build.mjs            bundles + inlines everything into dist/ and dist-standalone/Flux.html
+build.mjs            bundles + inlines everything into dist/ and dist-standalone/Night Light.html
 serve.mjs            dev-only static server
 tests/               node --test suite
 dist/                index.html + startup.js + app.css + app.js (what Tauri bundles)
-dist-standalone/     Flux.html — single-file standalone build
+dist-standalone/     Night Light.html — single-file standalone build
 src-tauri/           the native shell
   src/main.rs        Win32 GDI SetDeviceGammaRamp / EnumDisplayDevicesW + exit restoration
   tauri.conf.json    window and bundle configuration

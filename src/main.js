@@ -5,7 +5,7 @@ import { check as checkUpdate } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 
 const IS_NATIVE = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-const STORAGE_PREFIX = 'flux.';
+const STORAGE_PREFIX = 'nightlight.';
 
 const DEFAULTS = {
   theme: 'auto',
@@ -393,7 +393,7 @@ function toast(message) {
 }
 
 function applyTheme(value, announce = true) {
-  const theme = window.__fluxTheme ? window.__fluxTheme.apply(value) : (value === 'light' || value === 'dark' ? value : 'auto');
+  const theme = window.__nightLightTheme ? window.__nightLightTheme.apply(value) : (value === 'light' || value === 'dark' ? value : 'auto');
   state.theme = theme;
   saveValue('theme', theme);
   const btn = $('#btn-theme');
@@ -571,7 +571,7 @@ function togglePower(force) {
     saveValue('enabled', false);
   }
   refreshOutput();
-  toast(state.enabled ? 'Flux enabled' : 'Paused (6500K neutral)');
+  toast(state.enabled ? 'Night Light enabled' : 'Paused (6500K neutral)');
 }
 
 function pauseForOneHour() {
@@ -1256,12 +1256,12 @@ async function checkForUpdates(manual = false) {
       if (hint) hint.textContent = `Update available: v${update.version}`;
       const banner = $('#update');
       const textEl = $('#update-text');
-      if (textEl) textEl.textContent = `Flux v${update.version} is available`;
+      if (textEl) textEl.textContent = `Night Light v${update.version} is available`;
       if (banner) banner.classList.add('on');
     } else {
       pendingUpdate = null;
       if (hint) hint.textContent = 'You are on the latest version';
-      if (manual) toast('Flux is up to date');
+      if (manual) toast('Night Light is up to date');
     }
   } catch {
     if (hint) hint.textContent = 'Update check unavailable';

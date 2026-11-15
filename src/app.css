@@ -280,8 +280,8 @@ body {
 }
 :root[data-width="full"] #doc { max-width: none; }
 
-/* ---------- flux hero & solar curve ---------- */
-.flux-hero {
+/* ---------- hero & solar curve ---------- */
+.nl-hero {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -413,7 +413,7 @@ body {
 }
 
 /* ---------- schedule sliders ---------- */
-.flux-section {
+.nl-section {
   margin-bottom: 30px;
 }
 .section-lead {

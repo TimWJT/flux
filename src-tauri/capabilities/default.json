@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Permissions for the Flux main window: core defaults (app version, events) and the updater (check, download, relaunch). Window focus and saved size are handled in Rust and need no page permission.",
+  "description": "Permissions for the Night Light main window: core defaults (app version, events) and the updater (check, download, relaunch). Window focus and saved size are handled in Rust and need no page permission.",
   "windows": [
     "main"
   ],
