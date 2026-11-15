@@ -164,7 +164,8 @@ pub fn effect_multipliers(kelvin: u32, effect: &str) -> (f64, f64, f64) {
 /// Builds a linear 256-entry ramp for `(r, g, b)` multipliers and a brightness
 /// percentage (`20..=100`).
 pub fn build_gamma_ramp(r: f64, g: f64, b: f64, brightness_pct: f64) -> GammaRamp {
-    let dim = brightness_pct.clamp(20.0, 100.0) / 100.0;
+    let pct = if brightness_pct.is_finite() { brightness_pct } else { 100.0 };
+    let dim = pct.clamp(20.0, 100.0) / 100.0;
     GammaRamp::scaled(&GammaRamp::identity(), r * dim, g * dim, b * dim)
 }
 
@@ -506,7 +507,8 @@ impl<B: DisplayBackend> GammaController<B> {
 
     /// Applies white-point multipliers `(r, g, b)` at `brightness_pct`.
     pub fn apply(&self, seq: u64, rgb: (f64, f64, f64), brightness_pct: f64) -> GammaApplyResult {
-        let dim = brightness_pct.clamp(20.0, 100.0) / 100.0;
+        let pct = if brightness_pct.is_finite() { brightness_pct } else { 100.0 };
+    let dim = pct.clamp(20.0, 100.0) / 100.0;
         let req = [
             (rgb.0 * dim).clamp(0.0, 1.0),
             (rgb.1 * dim).clamp(0.0, 1.0),

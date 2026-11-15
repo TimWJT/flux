@@ -294,16 +294,29 @@ function smoothStepCosine(u) {
  * for any minute of the day [0..1440).
  */
 function computeScheduleKelvin(minutesOfDay, solar, cfg = state) {
-  const m = ((minutesOfDay % 1440) + 1440) % 1440;
+  const res = scheduleOnTimeline(minutesOfDay, solar, cfg);
+  res.bedtime = ((Math.round(res.bedtime) % 1440) + 1440) % 1440;
+  return res;
+}
+
+function scheduleOnTimeline(minutesOfDay, solar, cfg) {
   const span = cfg.transition === 'fast' ? 10 : cfg.transition === 'slow' ? 60 : 20;
   const sunrise = solar.sunrise;
   const sunset = solar.sunset;
   const wakeMin = Math.round(clampNum(cfg.wakeTime, 4, 11, 7) * 60);
-  // Bedtime begins 8 hours (480 min) before wakeTime, typically 22:00 - 01:00
+  // The day runs from the sunrise crossfade to the next one, so a bedtime after
+  // midnight (wake time 08:00 or later) sits past 1440 instead of wrapping to 0.
+  const dayStart = sunrise - span / 2;
+  let m = ((minutesOfDay % 1440) + 1440) % 1440;
+  if (m < dayStart) m += 1440;
+  // Bedtime begins 8 hours (480 min) before wakeTime, typically 22:00 - 03:00
   let bedtime = ((wakeMin - 480) + 1440) % 1440;
+  if (bedtime < sunrise) bedtime += 1440;
   if (bedtime <= sunset + span) {
-    bedtime = Math.min(1410, sunset + span + 60);
+    bedtime = sunset + span + 60;
   }
+  // Keep the bedtime crossfade clear of the next sunrise crossfade.
+  bedtime = Math.min(bedtime, dayStart + 1440 - span);
 
   const dayK = cfg.dayK;
   const sunsetK = cfg.sunsetK;
@@ -514,6 +527,7 @@ function selectPreset(presetId, announce = true) {
   state.nightK = preset.nightK;
   state.mode = 'solar';
   clearPauseAndEnable();
+  if (state.effect !== 'normal') applyEffect('normal', false);
   saveValue('activePreset', state.activePreset);
   saveValue('dayK', state.dayK);
   saveValue('sunsetK', state.sunsetK);
@@ -530,6 +544,7 @@ function setQuickTemp(kelvin, announce = true) {
   state.manualK = k;
   state.mode = 'manual';
   clearPauseAndEnable();
+  if (state.effect !== 'normal') applyEffect('normal', false);
   saveValue('manualK', k);
   saveValue('mode', 'manual');
   syncControlsFromState();
@@ -806,7 +821,7 @@ function pushGammaToHardware(kelvin, brightness, effect, isPaused) {
   activeGammaKey = key;
 
   if (!IS_NATIVE) return Promise.resolve();
-  if (key === lastAppliedKey && !pendingGammaReq) return Promise.resolve();
+  if (key === lastAppliedKey && !pendingGammaReq && !gammaInFlight) return Promise.resolve();
 
   pendingGammaReq = { effKelvin, effBrightness, effMode, isPaused, key };
   return drainGammaQueue();
@@ -902,7 +917,8 @@ function refreshOutput() {
   const out = evaluateCurrentOutput();
   const effKelvin = out.isPaused ? 6500 : Math.round(out.kelvin);
   const effBrightness = out.isPaused ? 100 : out.brightness;
-  const effMode = out.isPaused ? 'normal' : state.effect;
+  // The 24h preview shows the solar curve, so Movie Mode's fixed 4200K steps aside.
+  const effMode = out.isPaused || (state.previewing && state.effect === 'movie') ? 'normal' : state.effect;
   // Build from the effective values, so a paused display reads neutral even
   // while an effect such as Darkroom is still selected.
   const ramp = buildGammaRamp(effKelvin, effBrightness, effMode);
@@ -942,7 +958,7 @@ function refreshOutput() {
   if (phaseName) phaseName.textContent = out.phase;
   const heroKelvin = $('#hero-kelvin');
   if (heroKelvin) {
-    heroKelvin.innerHTML = `${out.kelvin}K <span id="hero-desc">${describeKelvin(out.kelvin, state.effect)}</span>`;
+    heroKelvin.innerHTML = `${out.kelvin}K <span id="hero-desc">${describeKelvin(out.kelvin, effMode)}</span>`;
   }
   const heroSub = $('#hero-sub');
   if (heroSub) {
@@ -1032,8 +1048,8 @@ function refreshOutput() {
   }
 
   renderSolarCurve(out);
-  updateWindowPreviewTint(out.kelvin, out.brightness, state.effect, out.isPaused);
-  pushGammaToHardware(out.kelvin, out.brightness, state.effect, out.isPaused);
+  updateWindowPreviewTint(out.kelvin, out.brightness, effMode, out.isPaused);
+  pushGammaToHardware(out.kelvin, out.brightness, effMode, out.isPaused);
 }
 
 function renderSidebar() {
@@ -1160,6 +1176,7 @@ function start24hPreview() {
 function stop24hPreview() {
   if (!state.previewing) return;
   clearInterval(previewTimer);
+  previewTimer = 0;
   state.previewing = false;
   state.previewMinutes = null;
   const btn = $('#btn-preview');
@@ -1597,6 +1614,8 @@ function bindEvents() {
       toggleSettings(false);
       return;
     }
+    // The settings dialog is modal: page shortcuts stay off while it is open.
+    if ($('#settings')?.classList.contains('on')) return;
     if (e.ctrlKey || e.metaKey || e.altKey) {
       if (e.key === '0') {
         e.preventDefault();

@@ -312,3 +312,56 @@ test('paused readout is neutral even with Darkroom selected', () => {
   ctx.refreshOutput();
   assert.equal(ctx._elements.get('channel-rgb').textContent, 'R 1.000 · G 1.000 · B 1.000');
 });
+
+test('bedtime after midnight (wake 08:00-11:00) stays 8 hours before wake', () => {
+  const ctx = loadEngine();
+  const solar = { sunrise: 390, sunset: 1140 };
+  const cfg = { dayK: 6500, sunsetK: 3400, nightK: 2300, transition: 'medium' };
+  for (const [wake, bed] of [[7, 1380], [8, 0], [9, 60], [11, 180]]) {
+    const r = ctx.computeScheduleKelvin(720, solar, { ...cfg, wakeTime: wake });
+    assert.equal(r.bedtime, bed, `wake ${wake}`);
+  }
+  const w9 = { ...cfg, wakeTime: 9 };
+  // 23:30 is still the sunset phase, 02:00 is past bedtime, 06:00 still night.
+  assert.equal(ctx.computeScheduleKelvin(1410, solar, w9).kelvin, 3400);
+  assert.equal(ctx.computeScheduleKelvin(120, solar, w9).kelvin, 2300);
+  assert.equal(ctx.computeScheduleKelvin(360, solar, w9).kelvin, 2300);
+  // Bedtime crossfade straddles midnight smoothly.
+  const mid = ctx.computeScheduleKelvin(60, solar, w9).kelvin;
+  assert.ok(mid < 3400 && mid > 2300);
+  // An early wake time still falls back to an evening bedtime after sunset.
+  const w4 = ctx.computeScheduleKelvin(720, { sunrise: 300, sunset: 1260 }, { ...cfg, wakeTime: 4 });
+  assert.equal(w4.bedtime, 1260 + 20 + 60);
+});
+
+test('reverting to the applied color while another write is in flight is not dropped', async () => {
+  const calls = [];
+  let release;
+  const ok = { applied: true, stale: false, displaysTotal: 1, displaysUpdated: 1, strength: 1, multipliers: [1, 1, 1], requested: [1, 1, 1] };
+  const ctx = loadEngine({
+    window: { __TAURI_INTERNALS__: {} },
+    invoke: async (cmd, args) => {
+      calls.push(args.kelvin);
+      if (args.kelvin === 3000) await new Promise(r => { release = r; });
+      return ok;
+    },
+  });
+  await ctx.pushGammaToHardware(2300, 100, 'normal', false); // A applied
+  const pB = ctx.pushGammaToHardware(3000, 100, 'normal', false); // B in flight
+  ctx.pushGammaToHardware(2300, 100, 'normal', false); // back to A
+  release();
+  await pB;
+  await new Promise(r => setImmediate(r));
+  assert.deepEqual(calls, [2300, 3000, 2300]);
+});
+
+test('stopping the 24h preview clears its timer so the curve blur exit works again', () => {
+  const ctx = loadEngine();
+  ctx.start24hPreview();
+  ctx.stop24hPreview();
+  assert.equal(vmGet(ctx, 'previewTimer'), 0);
+});
+
+function vmGet(ctx, name) {
+  return vm.runInContext(name, ctx);
+}
